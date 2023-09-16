@@ -191,7 +191,7 @@ export default function ImageUploader({
           <div
             onDrop={onDrop}
             onDragOver={(e) => e.preventDefault()}
-            className="bg-subtle hover:bg-muted hover:text-emphasis border-subtle text-default mt-8 rounded-sm border px-3 py-1 text-xs font-medium leading-4 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-1">
+            className="bg-subtle hover:bg-muted hover:text-emphasis text-default mt-8 rounded-sm border-2 border-dotted px-3 py-1 text-xs font-medium leading-4 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-1">
             <div className="cropper mt-6 flex flex-col items-center justify-center p-8">
               {!result && (
                 <div className="bg-muted flex h-20 max-h-20 w-20 items-center justify-start rounded-full">
@@ -207,13 +207,15 @@ export default function ImageUploader({
                 </div>
               )}
               {result && <CropContainer imageSrc={result as string} onCropComplete={setCroppedAreaPixels} />}
-              <label className="bg-subtle hover:bg-muted hover:text-emphasis border-subtle text-default mt-8 rounded-sm border px-3 py-1 text-xs font-medium leading-4 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-1">
+              <label
+                className="text-medium mt-7 px-3 py-1 text-xs font-bold leading-4"
+                style={{ cursor: "pointer" }}>
                 <input
                   onInput={onInputFile}
                   type="file"
                   name={id}
                   placeholder={t("upload_image")}
-                  className="text-default pointer-events-none absolute mt-4 opacity-0 "
+                  className="text-medium absolute mt-4 opacity-0 "
                   accept="image/*"
                 />
                 {t("choose_a_file")}
