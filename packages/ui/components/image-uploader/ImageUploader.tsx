@@ -131,18 +131,31 @@ export default function ImageUploader({
     if (props.imageSrc) setImageSrc(props.imageSrc);
   }, [props.imageSrc]);
 
-  const onInputFile = (e: FileEvent<HTMLInputElement>) => {
-    if (!e.target.files?.length) {
-      return;
-    }
-
+  const onFileChange = (file: File) => {
     const limit = 5 * 1000000; // max limit 5mb
-    const file = e.target.files[0];
 
     if (file.size > limit) {
       showToast(t("image_size_limit_exceed"), "error");
     } else {
       setFile(file);
+    }
+  };
+
+  const onInputFile = (e: FileEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      const file: File | null = files[0];
+      if (file) {
+        onFileChange(file);
+      }
+    }
+  };
+
+  const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      onFileChange(file);
     }
   };
 
@@ -175,32 +188,37 @@ export default function ImageUploader({
       </DialogTrigger>
       <DialogContent title={t("upload_target", { target })}>
         <div className="mb-4">
-          <div className="cropper mt-6 flex flex-col items-center justify-center p-8">
-            {!result && (
-              <div className="bg-muted flex h-20 max-h-20 w-20 items-center justify-start rounded-full">
-                {!imageSrc && (
-                  <p className="text-emphasis w-full text-center text-sm sm:text-xs">
-                    {t("no_target", { target })}
-                  </p>
-                )}
-                {imageSrc && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img className="h-20 w-20 rounded-full" src={imageSrc} alt={target} />
-                )}
-              </div>
-            )}
-            {result && <CropContainer imageSrc={result as string} onCropComplete={setCroppedAreaPixels} />}
-            <label className="bg-subtle hover:bg-muted hover:text-emphasis border-subtle text-default mt-8 rounded-sm border px-3 py-1 text-xs font-medium leading-4 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-1">
-              <input
-                onInput={onInputFile}
-                type="file"
-                name={id}
-                placeholder={t("upload_image")}
-                className="text-default pointer-events-none absolute mt-4 opacity-0 "
-                accept="image/*"
-              />
-              {t("choose_a_file")}
-            </label>
+          <div
+            onDrop={onDrop}
+            onDragOver={(e) => e.preventDefault()}
+            className="bg-subtle hover:bg-muted hover:text-emphasis border-subtle text-default mt-8 rounded-sm border px-3 py-1 text-xs font-medium leading-4 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-1">
+            <div className="cropper mt-6 flex flex-col items-center justify-center p-8">
+              {!result && (
+                <div className="bg-muted flex h-20 max-h-20 w-20 items-center justify-start rounded-full">
+                  {!imageSrc && (
+                    <p className="text-emphasis w-full text-center text-sm sm:text-xs">
+                      {t("no_target", { target })}
+                    </p>
+                  )}
+                  {imageSrc && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img className="h-20 w-20 rounded-full" src={imageSrc} alt={target} />
+                  )}
+                </div>
+              )}
+              {result && <CropContainer imageSrc={result as string} onCropComplete={setCroppedAreaPixels} />}
+              <label className="bg-subtle hover:bg-muted hover:text-emphasis border-subtle text-default mt-8 rounded-sm border px-3 py-1 text-xs font-medium leading-4 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-1">
+                <input
+                  onInput={onInputFile}
+                  type="file"
+                  name={id}
+                  placeholder={t("upload_image")}
+                  className="text-default pointer-events-none absolute mt-4 opacity-0 "
+                  accept="image/*"
+                />
+                {t("choose_a_file")}
+              </label>
+            </div>
           </div>
         </div>
         <DialogFooter className="relative">
